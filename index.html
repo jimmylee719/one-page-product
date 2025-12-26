@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>潤。氣 BR.EVE | 森林般的深呼吸 - 專利造粒西洋蔘精華</title>
     
-    <!-- 引入 Tailwind CSS -->
+    <!-- 1. 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 引入 React 和 ReactDOM (鎖定版本 18.2.0 以確保穩定) -->
-    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <!-- 2. 引入 React 和 ReactDOM (使用 Development 版本以便除錯，正式上線可換回 Production) -->
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
     
-    <!-- 引入 Lucide React 圖示庫 (鎖定版本 0.263.1 以解決 UMD 載入錯誤) -->
-    <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.min.js"></script>
+    <!-- 3. 引入 Lucide React 圖示庫 (更新至 0.469.0 以修復 UMD React 依賴問題) -->
+    <script src="https://unpkg.com/lucide-react@0.469.0/dist/umd/lucide-react.min.js"></script>
     
-    <!-- 引入 Babel 用於解析 JSX -->
+    <!-- 4. 引入 Babel 用於解析 JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <!-- 自定義動畫樣式 -->
@@ -33,18 +33,44 @@
 <body>
     <div id="root"></div>
 
+    <!-- 錯誤捕捉腳本：若畫面空白，顯示錯誤訊息 -->
+    <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            document.body.innerHTML += `
+                <div style="color: red; padding: 20px; border: 1px solid red; margin: 20px; background: #fff0f0;">
+                    <h3>網站發生錯誤 (JavaScript Error)</h3>
+                    <p><strong>錯誤訊息:</strong> ${message}</p>
+                    <p><strong>位置:</strong> ${source}:${lineno}:${colno}</p>
+                    <p>請檢查您的網路連線，或確認瀏覽器是否阻擋了 CDN 腳本。</p>
+                </div>
+            `;
+        };
+    </script>
+
     <script type="text/babel">
-        // 1. 從全域變數取得 React Hooks 和 Lucide 圖示
+        // 1. 安全取得 React Hooks
         const { useState, useEffect, useRef } = React;
         
-        // 修正：使用鎖定版本的 lucideReact 變數
+        // 2. 安全取得 Lucide 圖示，並處理載入失敗的情況
+        let Icons = {};
+        if (typeof lucideReact !== 'undefined') {
+            Icons = lucideReact;
+        } else {
+            console.error("Lucide React library failed to load.");
+            // 定義一個空組件作為備案，防止崩潰
+            const FallbackIcon = () => <span>(icon)</span>;
+            Icons = new Proxy({}, {
+                get: () => FallbackIcon
+            });
+        }
+
         const { 
             ArrowDown, CheckCircle2, BookOpen, FlaskConical, Leaf, 
             ExternalLink, Zap, ShieldCheck, Smile, Globe2, 
             AlertTriangle, TrendingUp, MessageCircle, Phone, FileText 
-        } = lucideReact;
+        } = Icons;
 
-        // 2. 應用程式組件代碼
+        // 3. 應用程式組件代碼
         
         /**
          * 輕量化滾動顯現動畫 (Intersection Observer)
@@ -547,7 +573,7 @@
             );
         };
 
-        // 3. 渲染應用程式
+        // 4. 渲染應用程式
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
