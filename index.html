@@ -1,0 +1,537 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  ArrowDown,
+  CheckCircle2,
+  BookOpen,
+  FlaskConical,
+  Leaf,
+  ExternalLink,
+  Zap,
+  ShieldCheck,
+  Smile,
+  Globe2,
+  AlertTriangle,
+  TrendingUp,
+  MessageCircle, 
+  Phone,
+  FileText
+} from 'lucide-react';
+
+/**
+ * 輕量化滾動顯現動畫 (Intersection Observer)
+ * 優化：確保 ref 清理，避免記憶體洩漏
+ */
+const RevealOnScroll = ({ children, delay = 0 }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect(); // 動畫觸發後即停止監聽，節省效能
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-1000 transform ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+};
+
+const Header = () => (
+  <header className="fixed top-0 left-0 w-full z-50 py-4 px-4 flex justify-center transition-all duration-300">
+    {/* 優化：增加 aria-label 提升無障礙體驗 */}
+    <nav aria-label="Main Navigation" className="text-xl md:text-2xl font-bold tracking-wider text-emerald-900 bg-white/90 backdrop-blur-md px-6 py-2 rounded-full shadow-sm border border-emerald-100 flex items-center gap-1">
+      SYNLAGEN<span className="text-cyan-600">.</span>
+      <span className="text-xs font-normal text-slate-500 ml-2 hidden sm:inline-block border-l border-slate-300 pl-2">
+        產品總代理：覓帆企業
+      </span>
+    </nav>
+  </header>
+);
+
+const HeroSection = () => {
+  const strokeStyle = {
+    WebkitTextStroke: '1px white',
+    textShadow: '0 4px 20px rgba(0,0,0,0.1)'
+  };
+
+  return (
+    <div className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 to-emerald-50/30 pt-24 pb-12">
+      
+      {/* 裝飾背景 */}
+      <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-emerald-100/40 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/4 -z-10"></div>
+      <div className="absolute bottom-0 left-0 w-[40vw] h-[40vw] bg-cyan-100/40 rounded-full blur-[80px] translate-y-1/3 -translate-x-1/4 -z-10"></div>
+
+      <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          
+          {/* 左側：文案 */}
+          <RevealOnScroll>
+            <div className="text-center lg:text-left">
+              <div className="inline-block border border-emerald-600/30 text-emerald-800 px-4 py-1.5 rounded-full text-xs font-bold tracking-[0.2em] mb-6 bg-white/80 backdrop-blur-sm shadow-sm">
+                專利萃取．速溶造粒．增強體力
+              </div>
+              
+              <h1 className="text-4xl md:text-6xl font-extrabold text-slate-800 leading-tight mb-6">
+                <span className="block mb-2 text-emerald-900" style={strokeStyle}>
+                  每一口，都是
+                </span>
+                <span className="block text-emerald-800" style={strokeStyle}>
+                  森林般的深呼吸
+                </span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-slate-600 font-medium leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
+                <span className="text-emerald-900 font-bold">潤。氣 BR.EVE 西洋蔘精華</span><br/>
+                結合頂尖生物科技與自然植萃，為都市生活注入純淨防護。
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                 <a href="#line-cta" className="bg-emerald-900 text-white px-8 py-3 rounded-full font-bold hover:bg-emerald-800 transition-all shadow-lg hover:shadow-emerald-900/20 flex items-center justify-center gap-2 group">
+                   立即體驗 <ArrowDown size={18} className="group-hover:translate-y-1 transition-transform" />
+                 </a>
+              </div>
+            </div>
+          </RevealOnScroll>
+
+          {/* 右側：產品主圖 */}
+          <RevealOnScroll delay={200}>
+            <div className="relative group flex justify-center lg:justify-end">
+              <div className="relative z-10 w-full max-w-md transform transition-transform duration-700 hover:scale-105">
+                {/* 優化：加入 fetchPriority="high" 提升 LCP 分數，這張圖最重要 */}
+                <img 
+                  src="https://www.dropbox.com/scl/fi/20rsh06fioacn4mycvn5g/.png?rlkey=vvlf54es89lvsdw3tazthhpiy&st=f6tqjy0z&dl=1" 
+                  alt="潤。氣 BR.EVE 產品包裝 - 專利造粒西洋蔘精華" 
+                  className="w-full h-auto object-contain drop-shadow-2xl animate-float"
+                  style={{ maxHeight: '600px' }}
+                  fetchPriority="high"
+                />
+              </div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-gradient-to-tr from-emerald-200 to-cyan-200 rounded-full blur-3xl opacity-50 -z-10 group-hover:opacity-70 transition-opacity duration-500"></div>
+            </div>
+          </RevealOnScroll>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const GlobalTrendSection = () => {
+  return (
+    <section className="py-20 bg-white relative overflow-hidden border-b border-slate-100">
+      <div className="max-w-5xl mx-auto px-6 relative z-10">
+        <RevealOnScroll>
+          <div className="flex items-center justify-center gap-2 mb-8">
+            <Globe2 className="w-6 h-6 text-cyan-600" />
+            <span className="text-cyan-700 font-bold tracking-widest text-sm uppercase">GLOBAL HEALTH ALERT</span>
+          </div>
+          
+          <h2 className="text-3xl font-bold text-center text-slate-900 mb-6">
+            環境健康議題：<br className="md:hidden" />當代不容忽視的挑戰
+          </h2>
+          
+          <p className="text-slate-600 text-center max-w-2xl mx-auto mb-12 leading-relaxed">
+            隨著環境變遷，我們正處於一個「呼吸不再理所當然」的時代。
+            國際權威機構數據顯示，呼吸道養護已成為現代人維持健康的重要課題。
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Stat 1 */}
+            <div className="bg-slate-50 p-6 rounded-xl shadow-sm border border-slate-100 hover:border-red-200 transition-colors flex flex-col">
+              <div className="flex items-center gap-2 mb-3">
+                <AlertTriangle className="w-5 h-5 text-red-500" />
+                <span className="font-bold text-slate-900">WHO 重大警訊</span>
+              </div>
+              <div className="text-3xl font-bold text-slate-800 mb-2">99%</div>
+              <p className="text-sm text-slate-600 leading-relaxed mb-4 flex-grow">
+                報告指出，全球 <span className="font-bold text-red-600">99% 人口</span> 暴露於空氣品質未達標的環境中，長期影響生活品質。
+              </p>
+              <div className="bg-slate-200/50 rounded-lg p-3 flex items-start gap-2 mt-auto">
+                <FileText className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+                <p className="text-[10px] text-slate-500 leading-tight">
+                  資料來源：世界衛生組織 (WHO) 空氣品質準則與健康報告 (2024 更新)
+                </p>
+              </div>
+            </div>
+
+            {/* Stat 2 */}
+            <div className="bg-slate-50 p-6 rounded-xl shadow-sm border border-slate-100 hover:border-orange-200 transition-colors flex flex-col">
+              <div className="flex items-center gap-2 mb-3">
+                <TrendingUp className="w-5 h-5 text-orange-500" />
+                <span className="font-bold text-slate-900">健康威脅攀升</span>
+              </div>
+              <div className="text-3xl font-bold text-slate-800 mb-2">Top 3</div>
+              <p className="text-sm text-slate-600 leading-relaxed mb-4 flex-grow">
+                慢性呼吸道相關問題已躍升全球<span className="font-bold text-orange-600">第三大死因</span>，且隨高齡化趨勢影響加劇。
+              </p>
+              <div className="bg-slate-200/50 rounded-lg p-3 flex items-start gap-2 mt-auto">
+                <FileText className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+                <p className="text-[10px] text-slate-500 leading-tight">
+                  資料來源：WHO 全球十大死因統計與全球疾病負擔 (GBD) 研究
+                </p>
+              </div>
+            </div>
+
+            {/* Stat 3 */}
+            <div className="bg-slate-50 p-6 rounded-xl shadow-sm border border-slate-100 hover:border-emerald-200 transition-colors flex flex-col">
+              <div className="flex items-center gap-2 mb-3">
+                <ShieldCheck className="w-5 h-5 text-emerald-500" />
+                <span className="font-bold text-slate-900">日常養護觀念</span>
+              </div>
+              <div className="text-xl font-bold text-slate-800 mb-2 mt-2">積極潤養</div>
+              <p className="text-sm text-slate-600 leading-relaxed mb-4 flex-grow">
+                醫學期刊指出，針對現代環境因子，建立<span className="font-bold text-emerald-700">「日常潤補防護網」</span>是維持健康防線的關鍵策略。
+              </p>
+              <div className="bg-slate-200/50 rounded-lg p-3 flex items-start gap-2 mt-auto">
+                <FileText className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+                <p className="text-[10px] text-slate-500 leading-tight">
+                  資料來源：國際醫學期刊《The Lancet》環境污染與健康專題研究
+                </p>
+              </div>
+            </div>
+          </div>
+        </RevealOnScroll>
+      </div>
+    </section>
+  );
+};
+
+const IntroSection = () => {
+  return (
+    <section className="py-24 bg-gradient-to-b from-white to-emerald-50/30">
+      <div className="max-w-6xl mx-auto px-6">
+        
+        <RevealOnScroll>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight">
+              為什麼我們需要<br className="md:hidden" />
+              <span className="text-emerald-800 border-b-4 border-emerald-200 mx-2 pb-1">潤。氣  </span>？
+            </h2>
+          </div>
+        </RevealOnScroll>
+
+        <RevealOnScroll delay={200}>
+          <div className="max-w-3xl mx-auto">
+            <p className="text-slate-600 leading-8 text-lg mb-8 text-center">
+              面對環境因子帶來的乾癢與不適，身體正發出無聲的訊號。<br />
+              <span className="text-emerald-800 font-bold"> SYNLAGEN 研發團隊 </span>
+              認為，單純的「補氣」已不足夠。
+            </p>
+            
+            <div className="bg-white p-8 rounded-xl border-l-4 border-emerald-500 shadow-md">
+              <h4 className="font-bold text-slate-900 mb-4 flex items-center justify-center gap-2 text-xl">
+                 <Zap size={24} className="text-emerald-600"/> 
+                 造粒技術 (Micro-Granulation)
+              </h4>
+              <p className="text-slate-600 text-base leading-relaxed text-center">
+                我們突破傳統液態限制，採用高科技造粒。
+                完整封存活性，實現<span className="font-bold text-emerald-700">「入口即化」</span>的溫柔潤澤，
+                讓滋補不再是吞嚥的負擔，而是舌尖上的森林浴。
+              </p>
+            </div>
+          </div>
+        </RevealOnScroll>
+
+      </div>
+    </section>
+  );
+};
+
+const IngredientCard = ({ title, sub, desc, literature, icon }) => (
+  <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 group">
+    <div className="flex flex-col md:flex-row gap-6">
+      <div className="shrink-0 flex items-start justify-center md:justify-start">
+        <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-700 shadow-inner group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
+          {icon}
+        </div>
+      </div>
+      <div className="flex-1 text-center md:text-left">
+        <h3 className="text-xl font-bold text-slate-900 mb-1">{title}</h3>
+        <p className="text-sm text-cyan-600 font-medium tracking-wide uppercase mb-4">{sub}</p>
+        <p className="text-slate-700 mb-6 leading-relaxed">
+          {desc}
+        </p>
+        
+        <div className="bg-slate-50 rounded-lg p-4 flex items-start gap-3 text-left border border-slate-100">
+          <BookOpen className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+          <div>
+            <span className="text-xs font-bold text-slate-600 block mb-1">科學文獻觀點</span>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              {literature}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const IngredientsSection = () => {
+  const ingredients = [
+    {
+      title: "專利小分子人蔘皂甙 (Rg3, Rh2, CK)",
+      sub: "Rare Ginsenosides",
+      icon: <FlaskConical size={28} />,
+      desc: "採用獨家酶轉化技術，將傳統人蔘大分子轉化為極易吸收的稀有皂甙。溫補不燥熱，能幫助調整體質，增強體力。",
+      literature: "根據《人蔘研究期刊 (JGR)》：稀有皂甙 Rg3 與 Rh2 被認為具調節生理機能特性；Compound K 為最終代謝物，具極佳生物利用率。"
+    },
+    {
+      title: "羅漢果糖 (Monk Fruit)",
+      sub: "Natural Sweetener",
+      icon: <Smile size={28} />,
+      desc: "來自天然羅漢果的萃取甜味，零熱量負擔，且能中和草本苦味，帶來清甜回甘的口感。",
+      literature: "羅漢果苷 (Mogrosides) 不參與糖代謝，適合需控糖族群。傳統上常被用於生津潤喉的配方中。"
+    },
+    {
+      title: "歐洲療肺草萃取",
+      sub: "Pulmonaria Officinalis",
+      icon: <Leaf size={28} />,
+      desc: "源自歐洲的傳統草本植物，含有豐富的多酚與植化素，帶來清新舒暢的感受。",
+      literature: "植物學研究指出：療肺草含有高單位的多酚物質與類黃酮，傳統應用於幫助潤澤舒暢、調整體質。"
+    },
+    {
+      title: "麥門冬 & 百合萃取物",
+      sub: "Ophiopogon & Lily Extract",
+      icon: <CheckCircle2 size={28} />,
+      desc: "漢方智慧中的經典潤補組。針對乾燥環境設計，生津解渴，幫助留住水分。",
+      literature: "傳統典籍與現代研究：麥門冬與百合富含多醣體與黏液質，具有良好的保水特性，幫助維持水潤感。"
+    }
+  ];
+
+  return (
+    <section className="py-24 bg-slate-50">
+      <div className="max-w-4xl mx-auto px-6">
+        <RevealOnScroll>
+          <div className="text-center mb-16">
+            <span className="text-cyan-600 font-bold tracking-widest text-sm uppercase">The Formula</span>
+            <h2 className="text-3xl font-bold text-slate-900 mt-2">黃金配方，科學解密</h2>
+            <p className="text-slate-500 mt-2 text-sm">點滴萃取，只為最純粹的潤澤</p>
+          </div>
+        </RevealOnScroll>
+
+        <div className="space-y-6">
+          {ingredients.map((item, idx) => (
+            <RevealOnScroll key={idx} delay={idx * 100}>
+              <IngredientCard {...item} />
+            </RevealOnScroll>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const FeatureHighlights = () => {
+  const features = [
+    {
+      icon: <Zap className="w-6 h-6 text-yellow-600" />,
+      title: "速溶造粒 (Instant Melt)",
+      desc: "非傳統膠囊。粉末細緻，倒入口中即刻溶解，吸收更快速，無需配水也能輕鬆食用。"
+    },
+    {
+      icon: <Smile className="w-6 h-6 text-emerald-600" />,
+      title: "無藥味，只有回甘",
+      desc: "使用天然「羅漢果糖」調味，無糖無負擔，帶出淡淡清香，適口性極佳。"
+    },
+    {
+      icon: <ShieldCheck className="w-6 h-6 text-cyan-600" />,
+      title: "純淨無添加",
+      desc: "堅持不添加人工色素、防腐劑。全製程通過第三方 SGS 檢驗，無重金屬、無農藥殘留。"
+    }
+  ];
+
+  return (
+    <section className="py-20 bg-white">
+      <div className="max-w-6xl mx-auto px-6">
+        <RevealOnScroll>
+          <h2 className="text-2xl font-bold text-center text-slate-900 mb-12">
+            為現代生活量身打造的細節
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {features.map((f, i) => (
+              <div key={i} className="bg-white p-8 rounded-xl border border-slate-100 shadow-lg hover:-translate-y-1 transition-transform duration-300 flex flex-col items-center text-center">
+                <div className="w-14 h-14 rounded-full bg-slate-50 flex items-center justify-center mb-6">
+                  {f.icon}
+                </div>
+                <h3 className="font-bold text-lg text-slate-800 mb-3">{f.title}</h3>
+                <p className="text-sm text-slate-600 leading-relaxed text-justify">
+                  {f.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </RevealOnScroll>
+      </div>
+    </section>
+  );
+};
+
+const UsageSection = () => {
+  return (
+    <section className="py-20 bg-emerald-900 text-white relative overflow-hidden">
+      <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+      
+      <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+        <RevealOnScroll>
+          <h2 className="text-2xl md:text-3xl font-bold mb-10">簡單，隨手可得的保護</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-emerald-900">
+            <div className="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+              <div className="text-4xl mb-4">👄</div>
+              <h3 className="font-bold text-lg mb-2">直接口服</h3>
+              <p className="text-sm text-slate-600">專利造粒粉末<br/>入口即化</p>
+            </div>
+            <div className="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+              <div className="text-4xl mb-4">🎒</div>
+              <h3 className="font-bold text-lg mb-2">輕便隨身</h3>
+              <p className="text-sm text-slate-600">獨立鋁箔包裝<br/>隨帶隨走</p>
+            </div>
+            <div className="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+              <div className="text-4xl mb-4">✈️</div>
+              <h3 className="font-bold text-lg mb-2">全時防護</h3>
+              <p className="text-sm text-slate-600">辦公、運動、旅行<br/>最佳夥伴</p>
+            </div>
+          </div>
+        </RevealOnScroll>
+      </div>
+    </section>
+  );
+};
+
+const FinalCTA = () => {
+  const lineLink = "https://lin.ee/zQKphw5u";
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(lineLink)}`;
+
+  return (
+    <section id="line-cta" className="py-24 bg-white relative overflow-hidden">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-5xl bg-emerald-50/50 rounded-full blur-3xl -z-10"></div>
+
+      <div className="max-w-3xl mx-auto px-6 text-center">
+        <RevealOnScroll>
+          <div className="inline-flex items-center gap-2 bg-[#06C755]/10 text-[#06C755] px-4 py-1.5 rounded-full text-sm font-bold mb-6">
+            <MessageCircle size={16} />
+            <span>產品專人服務</span>
+          </div>
+
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">
+            有任何疑問？或想直接下單？<br />
+            <span className="text-emerald-800">歡迎加入 總代理 LINE 官方好友</span>
+          </h2>
+          
+          <div className="text-slate-600 mb-10 text-lg leading-relaxed bg-white/50 backdrop-blur-sm p-6 rounded-xl inline-block border border-slate-100">
+            <p className="mb-2">本產品由 <strong>覓帆企業有限公司</strong> 總代理</p>
+            <p className="flex items-center justify-center gap-2 font-medium text-slate-800">
+               <Phone size={18} className="text-emerald-700"/>
+               服務專線：0958-266-804
+            </p>
+          </div>
+          
+          <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 max-w-lg mx-auto transform transition-all hover:shadow-2xl">
+            <div className="flex flex-col items-center gap-6">
+              
+              <div className="relative group cursor-pointer">
+                <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+                <div className="relative bg-white p-2 rounded-xl">
+                    {/* 優化：QR Code 是非裝飾性圖片，加上 alt 描述 */}
+                    <img 
+                      src={qrCodeUrl} 
+                      alt="掃描 QR Code 加入 SYNLAGEN LINE 官方好友" 
+                      className="w-48 h-48 object-contain"
+                      loading="lazy"
+                    />
+                </div>
+                <p className="mt-3 text-xs text-slate-400 font-medium">掃描上方條碼加入好友</p>
+              </div>
+
+              <a 
+                href={lineLink} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto min-w-[280px] bg-[#06C755] text-white py-4 px-8 rounded-xl text-lg font-bold hover:bg-[#05b64d] transition-all shadow-lg hover:shadow-[#06C755]/30 flex items-center justify-center gap-3 transform hover:-translate-y-1"
+              >
+                <MessageCircle size={24} fill="white" />
+                點擊加入 產品總代理覓帆企業 LINE 好友
+              </a>
+
+            </div>
+          </div>
+
+          <div className="mt-12">
+            {/* ★ [官網連結設置說明]
+               1. 請將下方 href="#" 的 # 替換為您未來的官網網址 (例如: https://www.synlagen.com)
+               2. 目前保留為空連結，用戶點擊不會跳轉，等待您上線後啟用
+            */}
+            <a 
+              href="#" 
+              target="_blank"
+              rel="noopener noreferrer" 
+              className="text-slate-500 hover:text-emerald-800 transition-colors text-sm font-medium flex items-center justify-center gap-2 mx-auto border-b border-transparent hover:border-emerald-800 pb-0.5 inline-flex"
+            >
+              <ExternalLink size={14} />
+              回到 SYNLAGEN 官方網站
+            </a>
+            <p className="mt-2 text-xs text-slate-400">
+               產品相關資訊請參閱原廠官網
+            </p>
+          </div>
+
+          <p className="mt-16 text-xs text-slate-400 max-w-xl mx-auto">
+            ※ 本產品為食品，非藥品，不具備治療或預防疾病之效能。<br/>
+            ※ 具體成分相關文獻僅供學術參考，不代表本產品之醫療功效。
+          </p>
+        </RevealOnScroll>
+      </div>
+    </section>
+  );
+};
+
+const Footer = () => (
+  <footer className="bg-slate-900 text-slate-400 py-8 text-center">
+    <div className="max-w-7xl mx-auto px-6">
+      <p className="text-sm text-slate-200 font-bold mb-2">
+        總代理：覓帆企業有限公司 | 服務專線：0958-266-804
+      </p>
+      <p className="text-xs font-medium opacity-60">
+        產品研發：SYNLAGEN Co., Ltd. 蔘樂見有限公司 <br className="sm:hidden"/> &copy; 2024 All rights reserved.
+      </p>
+    </div>
+  </footer>
+);
+
+const App = () => {
+  // 優化：設定網頁標題 (Title)
+  useEffect(() => {
+    document.title = "潤。氣 BR.EVE | 森林般的深呼吸 - 專利造粒西洋蔘精華";
+  }, []);
+
+  return (
+    <div className="font-sans text-slate-900 bg-white selection:bg-emerald-200 selection:text-emerald-900">
+      <Header />
+      <HeroSection />
+      <GlobalTrendSection />
+      <IntroSection />
+      <IngredientsSection />
+      <FeatureHighlights />
+      <UsageSection />
+      <FinalCTA />
+      <Footer />
+    </div>
+  );
+};
+
+export default App;
