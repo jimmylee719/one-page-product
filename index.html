@@ -8,12 +8,12 @@
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 引入 React 和 ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- 引入 React 和 ReactDOM (鎖定版本 18.2.0 以確保穩定) -->
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
     
-    <!-- 引入 Lucide React 圖示庫 (UMD 版本) -->
-    <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide-react.min.js"></script>
+    <!-- 引入 Lucide React 圖示庫 (鎖定版本 0.263.1 以解決 UMD 載入錯誤) -->
+    <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.min.js"></script>
     
     <!-- 引入 Babel 用於解析 JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -36,6 +36,8 @@
     <script type="text/babel">
         // 1. 從全域變數取得 React Hooks 和 Lucide 圖示
         const { useState, useEffect, useRef } = React;
+        
+        // 修正：使用鎖定版本的 lucideReact 變數
         const { 
             ArrowDown, CheckCircle2, BookOpen, FlaskConical, Leaf, 
             ExternalLink, Zap, ShieldCheck, Smile, Globe2, 
