@@ -121,7 +121,8 @@
         const HeroSection = () => {
             const strokeStyle = {
                 WebkitTextStroke: '1px white',
-                textShadow: '0 4px 20px rgba(0,0,0,0.1)'
+                textShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                paintOrder: 'stroke fill' // ★ 加入這一行，讓白色邊框退到文字後面
             };
 
             return (
